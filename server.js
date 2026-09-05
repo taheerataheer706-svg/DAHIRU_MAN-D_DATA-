@@ -30,17 +30,52 @@ app.use(express.static(path.join(__dirname, 'public')));
 ========================= */
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(
+    path.join(__dirname, 'public', 'index.html')
+  );
 });
 
 /* =========================
-   ADMIN LOGIN
+   ADMIN LOGIN PAGE
 ========================= */
 
 app.get('/admin', (req, res) => {
   res.sendFile(
     path.join(__dirname, 'public', 'admin-login.html')
   );
+});
+
+/* =========================
+   ADMIN LOGIN API
+========================= */
+
+app.post('/api/admin/login', (req, res) => {
+  const { email, password } = req.body;
+
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    return res.status(500).json({
+      success: false,
+      message: 'Admin login is not configured.'
+    });
+  }
+
+  if (
+    email === adminEmail &&
+    password === adminPassword
+  ) {
+    return res.json({
+      success: true,
+      message: 'Login successful'
+    });
+  }
+
+  return res.status(401).json({
+    success: false,
+    message: 'Invalid email or password'
+  });
 });
 
 /* =========================
